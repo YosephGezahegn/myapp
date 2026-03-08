@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:ethiomotion_words/theme.dart';
 import 'package:ethiomotion_words/providers/game_provider.dart';
 import 'package:ethiomotion_words/screens/category_selection_screen.dart';
@@ -20,6 +22,14 @@ class _ResultScreenState extends State<ResultScreen>
   @override
   void initState() {
     super.initState();
+    // Restore portrait orientation & disable wakelock
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    WakelockPlus.disable();
     _animController = AnimationController(
       vsync: this,
       duration: const Duration(milliseconds: 800),

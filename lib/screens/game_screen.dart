@@ -1,8 +1,10 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 import 'package:sensors_plus/sensors_plus.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:ethiomotion_words/theme.dart';
 import 'package:ethiomotion_words/providers/game_provider.dart';
 import 'package:ethiomotion_words/screens/result_screen.dart';
@@ -34,13 +36,16 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   late AnimationController _wordController;
   late Animation<double> _wordScale;
 
-  // Thresholds for tilt detection
-  static const double _tiltDownThreshold = 6.0; // Phone tilted face-down
-  static const double _tiltUpThreshold = -4.0; // Phone tilted face-up (back)
-
   @override
   void initState() {
     super.initState();
+
+    // ── Force landscape & keep screen awake ─────────────────────────────
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    WakelockPlus.enable();
 
     _feedbackController = AnimationController(
       vsync: this,
@@ -71,14 +76,11 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
   void _initSensor() {
     if (kIsWeb) {
-      // On web, try to listen but it might not work
       try {
         _accelerometerSub = accelerometerEventStream(
           samplingPeriod: const Duration(milliseconds: 100),
         ).listen(
-          (event) {
-            _onAccelerometerData(event);
-          },
+          (event) => _onAccelerometerData(event),
           onError: (error) {
             debugPrint('Accelerometer not available on web: $error');
             setState(() => _sensorAvailable = false);
@@ -114,12 +116,10 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     final provider = Provider.of<GameProvider>(context, listen: false);
     if (!provider.isGameActive || provider.isCooldown) return;
 
-    // Tilt DOWN = correct (z becomes large positive when phone face down)
-    if (_currentZ > _tiltDownThreshold) {
+    // Use provider's sensitivity thresholds instead of hardcoded values
+    if (_currentZ > provider.tiltDownThreshold) {
       _onCorrect(provider);
-    }
-    // Tilt UP = skip (z becomes negative when phone tilted backwards)
-    else if (_currentZ < _tiltUpThreshold) {
+    } else if (_currentZ < provider.tiltUpThreshold) {
       _onSkip(provider);
     }
   }
@@ -167,6 +167,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
   void _navigateToResults() {
     if (!mounted) return;
+    // Restore portrait & disable wakelock before navigating away
+    _restoreScreenSettings();
     Navigator.pushReplacement(
       context,
       PageRouteBuilder(
@@ -179,12 +181,24 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     );
   }
 
+  void _restoreScreenSettings() {
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.portraitUp,
+      DeviceOrientation.portraitDown,
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    WakelockPlus.disable();
+  }
+
   @override
   void dispose() {
     _accelerometerSub?.cancel();
     _gameTimer?.cancel();
     _feedbackController.dispose();
     _wordController.dispose();
+    // Safety net: restore screen settings on dispose
+    _restoreScreenSettings();
     super.dispose();
   }
 
@@ -193,7 +207,6 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     return Consumer<GameProvider>(
       builder: (context, provider, _) {
         if (provider.isGameOver) {
-          // Will navigate via timer callback
           return const SizedBox.shrink();
         }
 
@@ -225,12 +238,9 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                   // ── Main Content ─────────────────────────────────────
                   Column(
                     children: [
-                      // Timer bar
                       _buildTimerBar(provider, progress, isLowTime),
                       const SizedBox(height: 8),
-                      // Score indicator
                       _buildScoreBar(provider),
-                      // Word display
                       Expanded(
                         child: Center(
                           child: ScaleTransition(
@@ -254,9 +264,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                           ),
                         ),
                       ),
-                      // Manual buttons (for web or fallback)
                       if (!_sensorAvailable) _buildManualButtons(provider),
-                      // Sensor status
                       _buildSensorStatus(),
                       const SizedBox(height: 16),
                     ],
@@ -264,7 +272,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
                   // ── Feedback Overlay ─────────────────────────────────
                   if (_feedbackText != null)
-                    AnimatedBuilder3(
+                    _AnimListenerWidget(
                       animation: _feedbackController,
                       builder: (context, _) {
                         return Positioned.fill(
@@ -308,7 +316,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildTimerBar(GameProvider provider, double progress, bool isLowTime) {
+  Widget _buildTimerBar(
+      GameProvider provider, double progress, bool isLowTime) {
     return Column(
       children: [
         Padding(
@@ -360,13 +369,13 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          _scoreChip(Icons.check_circle, '${provider.correctCount}',
-              correctColor),
+          _scoreChip(
+              Icons.check_circle, '${provider.correctCount}', correctColor),
+          const SizedBox(width: 16),
+          _scoreChip(Icons.skip_next, '${provider.skipCount}', skipColor),
           const SizedBox(width: 16),
           _scoreChip(
-              Icons.skip_next, '${provider.skipCount}', skipColor),
-          const SizedBox(width: 16),
-          _scoreChip(Icons.format_list_numbered,
+              Icons.format_list_numbered,
               '${provider.currentWordNumber}/${provider.totalWords}',
               Colors.white54),
         ],
@@ -493,42 +502,37 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
   }
 }
 
-/// Simple AnimatedBuilder replacement to avoid name conflicts.
-class AnimatedBuilder3 extends StatefulWidget {
+/// Lightweight widget that rebuilds when an Animation ticks.
+class _AnimListenerWidget extends StatefulWidget {
   final Animation<double> animation;
   final Widget Function(BuildContext, Widget?) builder;
-  final Widget? child;
 
-  const AnimatedBuilder3({
-    super.key,
+  const _AnimListenerWidget({
     required this.animation,
     required this.builder,
-    this.child,
   });
 
   @override
-  State<AnimatedBuilder3> createState() => _AnimatedBuilder3State();
+  State<_AnimListenerWidget> createState() => _AnimListenerWidgetState();
 }
 
-class _AnimatedBuilder3State extends State<AnimatedBuilder3> {
+class _AnimListenerWidgetState extends State<_AnimListenerWidget> {
   @override
   void initState() {
     super.initState();
-    widget.animation.addListener(_update);
+    widget.animation.addListener(_onTick);
   }
 
   @override
   void dispose() {
-    widget.animation.removeListener(_update);
+    widget.animation.removeListener(_onTick);
     super.dispose();
   }
 
-  void _update() {
+  void _onTick() {
     if (mounted) setState(() {});
   }
 
   @override
-  Widget build(BuildContext context) {
-    return widget.builder(context, widget.child);
-  }
+  Widget build(BuildContext context) => widget.builder(context, null);
 }

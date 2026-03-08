@@ -50,6 +50,64 @@ class GameProvider extends ChangeNotifier {
   bool _isCooldown = false;
   bool get isCooldown => _isCooldown;
 
+  // ── Sensitivity Settings ──────────────────────────────────────────────────
+  // Tilt-down threshold (correct): higher = less sensitive, lower = more sensitive
+  double _tiltDownThreshold = 6.0;
+  double get tiltDownThreshold => _tiltDownThreshold;
+
+  // Tilt-up threshold (skip): more negative = less sensitive, less negative = more sensitive
+  double _tiltUpThreshold = -4.0;
+  double get tiltUpThreshold => _tiltUpThreshold;
+
+  // Sensitivity label for display
+  String get sensitivityLabel {
+    if (_tiltDownThreshold >= 7.0) return 'Low';
+    if (_tiltDownThreshold >= 5.5) return 'Medium';
+    if (_tiltDownThreshold >= 4.0) return 'High';
+    return 'Very High';
+  }
+
+  void setTiltDownSensitivity(double value) {
+    _tiltDownThreshold = value;
+    notifyListeners();
+  }
+
+  void setTiltUpSensitivity(double value) {
+    _tiltUpThreshold = value;
+    notifyListeners();
+  }
+
+  /// Set both thresholds from a single sensitivity preset.
+  /// [level]: 0 = Low, 1 = Medium (default), 2 = High, 3 = Very High
+  void setSensitivityPreset(int level) {
+    switch (level) {
+      case 0: // Low sensitivity — requires strong tilt
+        _tiltDownThreshold = 8.0;
+        _tiltUpThreshold = -6.0;
+        break;
+      case 1: // Medium (default)
+        _tiltDownThreshold = 6.0;
+        _tiltUpThreshold = -4.0;
+        break;
+      case 2: // High — lighter tilt triggers
+        _tiltDownThreshold = 4.5;
+        _tiltUpThreshold = -3.0;
+        break;
+      case 3: // Very High — very light tilt triggers
+        _tiltDownThreshold = 3.0;
+        _tiltUpThreshold = -2.0;
+        break;
+    }
+    notifyListeners();
+  }
+
+  int get sensitivityPresetIndex {
+    if (_tiltDownThreshold >= 7.0) return 0;
+    if (_tiltDownThreshold >= 5.5) return 1;
+    if (_tiltDownThreshold >= 4.0) return 2;
+    return 3;
+  }
+
   // ── Asset paths ──────────────────────────────────────────────────────────
   static const List<String> _assetPaths = [
     'assets/words/ethiopian_food.json',

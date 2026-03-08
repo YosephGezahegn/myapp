@@ -1,6 +1,8 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+import 'package:wakelock_plus/wakelock_plus.dart';
 import 'package:ethiomotion_words/theme.dart';
 import 'package:ethiomotion_words/providers/game_provider.dart';
 import 'package:ethiomotion_words/screens/game_screen.dart';
@@ -20,6 +22,12 @@ class _CountdownScreenState extends State<CountdownScreen>
 
   @override
   void initState() {
+    // Force landscape orientation & keep screen awake
+    SystemChrome.setPreferredOrientations([
+      DeviceOrientation.landscapeLeft,
+      DeviceOrientation.landscapeRight,
+    ]);
+    WakelockPlus.enable();
     super.initState();
     _scaleController = AnimationController(
       vsync: this,

@@ -147,6 +147,86 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen>
               ),
               const SizedBox(height: 16),
 
+              // ── Tilt Sensitivity Selector ─────────────────────────────
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24),
+                child: Column(
+                  children: [
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Icon(Icons.sensors, color: Colors.white38, size: 16),
+                        const SizedBox(width: 6),
+                        Text(
+                          'Tilt Sensitivity',
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                                color: Colors.white54,
+                              ),
+                        ),
+                      ],
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        {'label': 'Low', 'index': 0},
+                        {'label': 'Medium', 'index': 1},
+                        {'label': 'High', 'index': 2},
+                        {'label': 'Very High', 'index': 3},
+                      ].map((item) {
+                        final idx = item['index'] as int;
+                        final label = item['label'] as String;
+                        final isSelected = provider.sensitivityPresetIndex == idx;
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4),
+                          child: GestureDetector(
+                            onTap: () => provider.setSensitivityPreset(idx),
+                            child: AnimatedContainer(
+                              duration: const Duration(milliseconds: 200),
+                              padding: const EdgeInsets.symmetric(
+                                  horizontal: 12, vertical: 8),
+                              decoration: BoxDecoration(
+                                gradient: isSelected
+                                    ? const LinearGradient(
+                                        colors: [
+                                          ethiopianYellow,
+                                          Color(0xFFFFA000)
+                                        ],
+                                      )
+                                    : null,
+                                color: isSelected
+                                    ? null
+                                    : Colors.white.withAlpha(15),
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: isSelected
+                                      ? ethiopianYellow
+                                      : Colors.white.withAlpha(30),
+                                  width: 1,
+                                ),
+                              ),
+                              child: Text(
+                                label,
+                                style: TextStyle(
+                                  color: isSelected
+                                      ? Colors.black87
+                                      : Colors.white70,
+                                  fontWeight: isSelected
+                                      ? FontWeight.bold
+                                      : FontWeight.normal,
+                                  fontSize: 12,
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      }).toList(),
+                    ),
+                  ],
+                ),
+              ),
+              const SizedBox(height: 12),
+
               // ── Categories Grid ──────────────────────────────────────
               Expanded(
                 child: provider.isLoading
