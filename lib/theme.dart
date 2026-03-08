@@ -1,114 +1,161 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-// Ethiopian-inspired colors
+// ── Ethiopian-inspired Colors ──────────────────────────────────────────────
 const Color ethiopianGreen = Color(0xFF009A44);
 const Color ethiopianYellow = Color(0xFFFFD700);
 const Color ethiopianRed = Color(0xFFEF3340);
-const Color ethiopianBlue = Color(0xFF1976D2); // A complementary color for accents
+const Color ethiopianBlue = Color(0xFF0D47A1);
+const Color ethiopianDarkBg = Color(0xFF121212);
+const Color ethiopianSurfaceDark = Color(0xFF1E1E2E);
+const Color ethiopianCardDark = Color(0xFF2A2A3C);
 
-final TextTheme ethiopianTextTheme = TextTheme(
-  displayLarge: GoogleFonts.zillaSlab(
-      fontSize: 57, fontWeight: FontWeight.bold, color: Colors.black),
-  displayMedium: GoogleFonts.zillaSlab(
-      fontSize: 45, fontWeight: FontWeight.bold, color: Colors.black),
-  displaySmall: GoogleFonts.zillaSlab(
-      fontSize: 36, fontWeight: FontWeight.bold, color: Colors.black),
-  headlineLarge: GoogleFonts.oswald(
-      fontSize: 32, fontWeight: FontWeight.bold, color: Colors.black),
-  headlineMedium: GoogleFonts.oswald(
-      fontSize: 28, fontWeight: FontWeight.w600, color: Colors.black),
-  headlineSmall: GoogleFonts.oswald(
-      fontSize: 24, fontWeight: FontWeight.w600, color: Colors.black),
-  titleLarge: GoogleFonts.roboto(
-      fontSize: 22, fontWeight: FontWeight.w500, color: Colors.black),
-  titleMedium: GoogleFonts.roboto(
-      fontSize: 16, fontWeight: FontWeight.w500, color: Colors.black),
-  titleSmall: GoogleFonts.roboto(
-      fontSize: 14, fontWeight: FontWeight.w500, color: Colors.black),
-  bodyLarge: GoogleFonts.openSans(fontSize: 16, color: Colors.black87),
-  bodyMedium: GoogleFonts.openSans(fontSize: 14, color: Colors.black87),
-  bodySmall: GoogleFonts.openSans(fontSize: 12, color: Colors.black54),
-  labelLarge: GoogleFonts.roboto(
-      fontSize: 14, fontWeight: FontWeight.w500, color: Colors.white),
-  labelMedium: GoogleFonts.roboto(
-      fontSize: 12, fontWeight: FontWeight.w500, color: Colors.white),
-  labelSmall: GoogleFonts.roboto(
-      fontSize: 10, fontWeight: FontWeight.w500, color: Colors.white),
-);
+// Category card colors
+const List<Color> categoryColors = [
+  Color(0xFFE65100), // Food - Deep Orange
+  Color(0xFF1565C0), // Cities - Blue
+  Color(0xFF6A1B9A), // Celebrities - Purple
+  Color(0xFF4E342E), // History - Brown
+  Color(0xFF2E7D32), // Animals - Green
+  Color(0xFFF57F17), // Culture - Amber
+];
 
-// Light Theme
-final ThemeData lightTheme = ThemeData(
-  useMaterial3: true,
-  colorScheme: ColorScheme.fromSeed(
-    seedColor: ethiopianGreen,
+// Game result colors
+const Color correctColor = Color(0xFF00C853);
+const Color skipColor = Color(0xFFFF6D00);
+
+// ── Typography ─────────────────────────────────────────────────────────────
+TextTheme get ethiopianTextTheme => TextTheme(
+      displayLarge: GoogleFonts.poppins(
+        fontSize: 57,
+        fontWeight: FontWeight.w800,
+      ),
+      displayMedium: GoogleFonts.poppins(
+        fontSize: 45,
+        fontWeight: FontWeight.w700,
+      ),
+      displaySmall: GoogleFonts.poppins(
+        fontSize: 36,
+        fontWeight: FontWeight.w700,
+      ),
+      headlineLarge: GoogleFonts.poppins(
+        fontSize: 32,
+        fontWeight: FontWeight.w700,
+      ),
+      headlineMedium: GoogleFonts.poppins(
+        fontSize: 28,
+        fontWeight: FontWeight.w600,
+      ),
+      headlineSmall: GoogleFonts.poppins(
+        fontSize: 24,
+        fontWeight: FontWeight.w600,
+      ),
+      titleLarge: GoogleFonts.poppins(
+        fontSize: 22,
+        fontWeight: FontWeight.w600,
+      ),
+      titleMedium: GoogleFonts.poppins(
+        fontSize: 16,
+        fontWeight: FontWeight.w500,
+      ),
+      titleSmall: GoogleFonts.poppins(
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+      ),
+      bodyLarge: GoogleFonts.inter(fontSize: 16),
+      bodyMedium: GoogleFonts.inter(fontSize: 14),
+      bodySmall: GoogleFonts.inter(fontSize: 12),
+      labelLarge: GoogleFonts.poppins(
+        fontSize: 14,
+        fontWeight: FontWeight.w600,
+      ),
+      labelMedium: GoogleFonts.poppins(
+        fontSize: 12,
+        fontWeight: FontWeight.w500,
+      ),
+      labelSmall: GoogleFonts.poppins(
+        fontSize: 10,
+        fontWeight: FontWeight.w500,
+      ),
+    );
+
+// ── Light Theme ────────────────────────────────────────────────────────────
+ThemeData get lightTheme {
+  final textTheme = ethiopianTextTheme;
+  return ThemeData(
+    useMaterial3: true,
     brightness: Brightness.light,
-    primary: ethiopianGreen,
-    onPrimary: Colors.white,
-    secondary: ethiopianYellow,
-    onSecondary: Colors.black,
-    tertiary: ethiopianRed,
-    error: ethiopianRed,
-    onError: Colors.white,
-    background: Colors.white,
-    onBackground: Colors.black,
-    surface: Colors.white,
-    onSurface: Colors.black,
-  ),
-  textTheme: ethiopianTextTheme,
-  appBarTheme: AppBarTheme(
-    backgroundColor: ethiopianGreen,
-    foregroundColor: Colors.white,
-    titleTextStyle:
-        ethiopianTextTheme.headlineMedium?.copyWith(color: Colors.white),
-  ),
-  elevatedButtonTheme: ElevatedButtonThemeData(
-    style: ElevatedButton.styleFrom(
-      foregroundColor: Colors.white,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: ethiopianGreen,
+      brightness: Brightness.light,
+      primary: ethiopianGreen,
+      secondary: ethiopianYellow,
+      tertiary: ethiopianRed,
+      error: ethiopianRed,
+    ),
+    textTheme: textTheme,
+    scaffoldBackgroundColor: const Color(0xFFF5F5F0),
+    appBarTheme: AppBarTheme(
       backgroundColor: ethiopianGreen,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      textStyle: ethiopianTextTheme.labelLarge,
+      foregroundColor: Colors.white,
+      elevation: 0,
+      centerTitle: true,
+      titleTextStyle: textTheme.titleLarge?.copyWith(color: Colors.white),
     ),
-  ),
-  // Add other component themes as needed
-);
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.white,
+        backgroundColor: ethiopianGreen,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+        textStyle: textTheme.labelLarge,
+        elevation: 4,
+      ),
+    ),
+    cardTheme: CardThemeData(
+      elevation: 4,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+    ),
+  );
+}
 
-// Dark Theme (optional, but good for completeness)
-final ThemeData darkTheme = ThemeData(
-  useMaterial3: true,
-  colorScheme: ColorScheme.fromSeed(
-    seedColor: ethiopianGreen,
+// ── Dark Theme ─────────────────────────────────────────────────────────────
+ThemeData get darkTheme {
+  final textTheme = ethiopianTextTheme;
+  return ThemeData(
+    useMaterial3: true,
     brightness: Brightness.dark,
-    primary: ethiopianGreen,
-    onPrimary: Colors.white,
-    secondary: ethiopianYellow,
-    onSecondary: Colors.black,
-    tertiary: ethiopianRed,
-    error: ethiopianRed,
-    onError: Colors.white,
-    background: Colors.grey[900],
-    onBackground: Colors.white,
-    surface: Colors.grey[800],
-    onSurface: Colors.white,
-  ),
-  textTheme: ethiopianTextTheme.apply(
-      bodyColor: Colors.white,
-      displayColor: Colors.white), // Apply white color for dark theme
-  appBarTheme: AppBarTheme(
-    backgroundColor: Colors.grey[900],
-    foregroundColor: Colors.white,
-    titleTextStyle:
-        ethiopianTextTheme.headlineMedium?.copyWith(color: Colors.white),
-  ),
-  elevatedButtonTheme: ElevatedButtonThemeData(
-    style: ElevatedButton.styleFrom(
-      foregroundColor: Colors.black,
-      backgroundColor: ethiopianYellow,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
-      textStyle: ethiopianTextTheme.labelLarge,
+    colorScheme: ColorScheme.fromSeed(
+      seedColor: ethiopianGreen,
+      brightness: Brightness.dark,
+      primary: ethiopianGreen,
+      secondary: ethiopianYellow,
+      tertiary: ethiopianRed,
+      error: ethiopianRed,
     ),
-  ),
-  // Add other component themes as needed
-);
+    textTheme: textTheme,
+    scaffoldBackgroundColor: ethiopianDarkBg,
+    appBarTheme: AppBarTheme(
+      backgroundColor: ethiopianSurfaceDark,
+      foregroundColor: Colors.white,
+      elevation: 0,
+      centerTitle: true,
+      titleTextStyle: textTheme.titleLarge?.copyWith(color: Colors.white),
+    ),
+    elevatedButtonTheme: ElevatedButtonThemeData(
+      style: ElevatedButton.styleFrom(
+        foregroundColor: Colors.black,
+        backgroundColor: ethiopianYellow,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+        padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+        textStyle: textTheme.labelLarge,
+        elevation: 4,
+      ),
+    ),
+    cardTheme: CardThemeData(
+      elevation: 4,
+      color: ethiopianCardDark,
+      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+    ),
+  );
+}
