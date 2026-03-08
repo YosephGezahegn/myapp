@@ -148,7 +148,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         ),
                         const SizedBox(height: 30),
                         Text(
-                          'Intensity: ${_confettiLevel.round()}',
+                          'Intensityyyy: ${_confettiLevel.round()}',
                           style: Theme.of(context).textTheme.bodyLarge,
                         ),
                       ],
