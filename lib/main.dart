@@ -1,6 +1,7 @@
 import 'package:confetti/confetti.dart';
 import 'package:flutter/material.dart';
 import 'dart:math';
+import 'dart:developer' as developer;
 
 void main() {
   runApp(const MyApp());
@@ -12,11 +13,23 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Confetti App',
+      debugShowCheckedModeBanner: false,
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+          brightness: Brightness.light,
+        ),
+        useMaterial3: true,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      darkTheme: ThemeData(
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.deepPurple,
+          brightness: Brightness.dark,
+        ),
+        useMaterial3: true,
+      ),
+      home: const MyHomePage(title: 'Confetti Fun'),
     );
   }
 }
@@ -32,12 +45,15 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  double _confettiLevel = 20.0;
   late ConfettiController _confettiController;
 
   @override
   void initState() {
     super.initState();
-    _confettiController = ConfettiController(duration: const Duration(seconds: 1));
+    _confettiController =
+        ConfettiController(duration: const Duration(seconds: 1));
+    developer.log('Confetti App Initialized', name: 'app.lifecycle');
   }
 
   @override
@@ -50,32 +66,8 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {
       _counter++;
     });
+    developer.log('Counter incremented to $_counter', name: 'app.interaction');
     _confettiController.play();
-  }
-
-  /// A custom Path to paint stars.
-  Path drawStar(Size size) {
-    // Method to convert degree to radians
-    double degToRad(double deg) => deg * (pi / 180.0);
-
-    const numberOfPoints = 5;
-    final halfWidth = size.width / 2;
-    final externalRadius = halfWidth;
-    final internalRadius = halfWidth / 2.5;
-    final degreesPerStep = degToRad(360 / numberOfPoints);
-    final halfDegreesPerStep = degreesPerStep / 2;
-    final path = Path();
-    final fullAngle = degToRad(360);
-    path.moveTo(size.width, halfWidth);
-
-    for (double step = 0; step < fullAngle; step += degreesPerStep) {
-      path.lineTo(halfWidth + externalRadius * cos(step),
-          halfWidth + externalRadius * sin(step));
-      path.lineTo(halfWidth + internalRadius * cos(step + halfDegreesPerStep),
-          halfWidth + internalRadius * sin(step + halfDegreesPerStep));
-    }
-    path.close();
-    return path;
   }
 
   @override
@@ -84,41 +76,115 @@ class _MyHomePageState extends State<MyHomePage> {
       children: [
         Scaffold(
           appBar: AppBar(
-            backgroundColor: Theme.of(context).colorScheme.inversePrimary,
+            backgroundColor: Theme.of(context).colorScheme.primaryContainer,
             title: Text(widget.title),
+            centerTitle: true,
           ),
-          body: Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: <Widget>[
-                const Text('You have pushed the button this many times:'),
-                Text(
-                  '$_counter',
-                  style: Theme.of(context).textTheme.headlineMedium,
+          body: SafeArea(
+            child: Row(
+              children: [
+                // Improved Vertical Slider Container
+                Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Icon(Icons.star, color: Colors.amber),
+                      Expanded(
+                        child: RotatedBox(
+                          quarterTurns: 3,
+                          child: Slider(
+                            value: _confettiLevel,
+                            min: 1,
+                            max: 100,
+                            divisions: 20,
+                            label: _confettiLevel.round().toString(),
+                            onChanged: (double value) {
+                              setState(() {
+                                _confettiLevel = value;
+                              });
+                            },
+                          ),
+                        ),
+                      ),
+                      const Icon(Icons.star_border, color: Colors.grey),
+                      const SizedBox(height: 8),
+                      const Text('Level',
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                    ],
+                  ),
+                ),
+                // Main Content
+                Expanded(
+                  child: Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text(
+                          'Celebrations:',
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                        const SizedBox(height: 10),
+                        Card(
+                          elevation: 8,
+                          shadowColor: Theme.of(context).colorScheme.primary,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(20),
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 40.0, vertical: 20.0),
+                            child: Text(
+                              '$_counter',
+                              style: Theme.of(context)
+                                  .textTheme
+                                  .displayLarge
+                                  ?.copyWith(
+                                    fontWeight: FontWeight.bold,
+                                    color: Theme.of(context).colorScheme.primary,
+                                  ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(height: 30),
+                        Text(
+                          'Intensity: ${_confettiLevel.round()}',
+                          style: Theme.of(context).textTheme.bodyLarge,
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
               ],
             ),
           ),
-          floatingActionButton: FloatingActionButton(
+          floatingActionButton: FloatingActionButton.large(
             onPressed: _incrementCounter,
-            tooltip: 'Increment',
-            child: const Icon(Icons.add),
+            tooltip: 'Celebrate!',
+            child: const Icon(Icons.celebration, size: 40),
           ),
         ),
+        // Confetti overlap
         Align(
           alignment: Alignment.topCenter,
           child: ConfettiWidget(
             confettiController: _confettiController,
-            blastDirectionality: BlastDirectionality.explosive, // don't specify a direction, blast randomly
-            shouldLoop: false, // start again as soon as the animation is finished
+            blastDirection: pi / 2,
+            maxBlastForce: 10,
+            minBlastForce: 5,
+            emissionFrequency: 0.1,
+            numberOfParticles: _confettiLevel.round(),
+            gravity: 0.2,
+            shouldLoop: false,
             colors: const [
-              Colors.green,
+              Colors.red,
               Colors.blue,
-              Colors.pink,
+              Colors.yellow,
+              Colors.green,
+              Colors.purple,
               Colors.orange,
-              Colors.purple
-            ], // manually specify the colors to be used
-            createParticlePath: drawStar, // define a custom shape/path.
+              Colors.pink,
+            ],
           ),
         ),
       ],
