@@ -103,7 +103,7 @@ class _CountdownScreenState extends State<CountdownScreen>
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text(
-                  category?.category ?? 'Get Ready!',
+                  category?.categoryForLang(provider.language) ?? provider.tr('getReady'),
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         color: Colors.white,
                         fontWeight: FontWeight.w600,
@@ -112,7 +112,7 @@ class _CountdownScreenState extends State<CountdownScreen>
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Hold your phone on your forehead!',
+                  provider.tr('holdForehead'),
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: Colors.white70,
                       ),
@@ -161,11 +161,11 @@ class _CountdownScreenState extends State<CountdownScreen>
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    _instructionChip(Icons.arrow_downward, 'Tilt DOWN',
-                        'Correct', correctColor),
+                    _instructionChip(Icons.arrow_downward, provider.tr('tiltDown'),
+                        provider.tr('correct'), correctColor),
                     const SizedBox(width: 16),
                     _instructionChip(
-                        Icons.arrow_upward, 'Tilt UP', 'Skip', skipColor),
+                        Icons.arrow_upward, provider.tr('tiltUp'), provider.tr('skip'), skipColor),
                   ],
                 ),
               ],

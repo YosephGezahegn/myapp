@@ -3,9 +3,22 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show rootBundle;
 import 'package:ethiomotion_words/models/word_category.dart';
+import 'package:ethiomotion_words/l10n/strings.dart';
 
 /// Manages game state: categories, current word, score, timer, results.
 class GameProvider extends ChangeNotifier {
+  // ── Language ─────────────────────────────────────────────────────────────
+  AppLanguage _language = AppLanguage.english;
+  AppLanguage get language => _language;
+
+  void setLanguage(AppLanguage lang) {
+    _language = lang;
+    notifyListeners();
+  }
+
+  /// Shortcut to get a localized UI string.
+  String tr(String key) => S.get(key, _language);
+
   // ── Category Data ────────────────────────────────────────────────────────
   List<WordCategory> _categories = [];
   List<WordCategory> get categories => _categories;
@@ -157,7 +170,10 @@ class GameProvider extends ChangeNotifier {
   void startGame() {
     if (_selectedCategory == null) return;
 
-    _shuffledWords = List<String>.from(_selectedCategory!.words);
+    // Use language-appropriate word list
+    _shuffledWords = List<String>.from(
+      _selectedCategory!.wordsForLang(_language),
+    );
     _shuffledWords.shuffle(Random());
     _currentWordIndex = 0;
     _correctCount = 0;

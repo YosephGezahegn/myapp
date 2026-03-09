@@ -126,13 +126,13 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
 
   void _onCorrect(GameProvider provider) {
     provider.markCorrect();
-    _showFeedback('CORRECT! ✓', correctColor);
+    _showFeedback(provider.tr('correctFeedback'), correctColor);
     _animateNewWord();
   }
 
   void _onSkip(GameProvider provider) {
     provider.markSkip();
-    _showFeedback('SKIP ✗', skipColor);
+    _showFeedback(provider.tr('skipFeedback'), skipColor);
     _animateNewWord();
   }
 
@@ -265,7 +265,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                         ),
                       ),
                       if (!_sensorAvailable) _buildManualButtons(provider),
-                      _buildSensorStatus(),
+                      _buildSensorStatus(provider),
                       const SizedBox(height: 16),
                     ],
                   ),
@@ -326,7 +326,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                provider.selectedCategory?.category ?? '',
+                provider.selectedCategory?.categoryForLang(provider.language) ?? '',
                 style: const TextStyle(
                   color: Colors.white70,
                   fontSize: 14,
@@ -423,12 +423,12 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: skipColor.withAlpha(80)),
                 ),
-                child: const Column(
+                child: Column(
                   children: [
-                    Icon(Icons.arrow_upward, color: skipColor, size: 28),
-                    SizedBox(height: 4),
+                    const Icon(Icons.arrow_upward, color: skipColor, size: 28),
+                    const SizedBox(height: 4),
                     Text(
-                      'SKIP',
+                      provider.tr('skip').toUpperCase(),
                       style: TextStyle(
                         color: skipColor,
                         fontWeight: FontWeight.w700,
@@ -451,12 +451,12 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
                   borderRadius: BorderRadius.circular(16),
                   border: Border.all(color: correctColor.withAlpha(80)),
                 ),
-                child: const Column(
+                child: Column(
                   children: [
-                    Icon(Icons.arrow_downward, color: correctColor, size: 28),
-                    SizedBox(height: 4),
+                    const Icon(Icons.arrow_downward, color: correctColor, size: 28),
+                    const SizedBox(height: 4),
                     Text(
-                      'CORRECT',
+                      provider.tr('correct').toUpperCase(),
                       style: TextStyle(
                         color: correctColor,
                         fontWeight: FontWeight.w700,
@@ -473,7 +473,7 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
     );
   }
 
-  Widget _buildSensorStatus() {
+  Widget _buildSensorStatus(GameProvider provider) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 20),
       child: Row(
@@ -487,8 +487,8 @@ class _GameScreenState extends State<GameScreen> with TickerProviderStateMixin {
           const SizedBox(width: 6),
           Text(
             _sensorAvailable
-                ? 'Motion sensor active'
-                : 'Motion sensor unavailable — use buttons',
+                ? provider.tr('motionSensorActive')
+                : provider.tr('motionSensorUnavailable'),
             style: TextStyle(
               color: _sensorAvailable
                   ? ethiopianGreen.withAlpha(180)

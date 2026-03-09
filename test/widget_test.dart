@@ -13,7 +13,7 @@ void main() {
       ),
     );
 
-    // Verify that the app title is displayed
+    // Verify that the app title is displayed (defaults to English)
     expect(find.text('EthioMotion'), findsOneWidget);
     expect(find.text('WORDS'), findsOneWidget);
 
@@ -22,5 +22,10 @@ void main() {
 
     // Verify that How to Play button is present
     expect(find.text('How to Play'), findsOneWidget);
+
+    // Verify language selector is present
+    expect(find.text('🇬🇧 English'), findsOneWidget);
+    expect(find.text('🇪🇹 አማርኛ'), findsOneWidget);
+    expect(find.text('🇪🇹 Afaan Oromoo'), findsOneWidget);
   });
 }

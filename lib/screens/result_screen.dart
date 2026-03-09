@@ -57,16 +57,16 @@ class _ResultScreenState extends State<ResultScreen>
     String message;
     if (percentage >= 80) {
       emoji = '🏆';
-      message = 'Outstanding!';
+      message = provider.tr('outstanding');
     } else if (percentage >= 60) {
       emoji = '🎉';
-      message = 'Well Done!';
+      message = provider.tr('wellDone');
     } else if (percentage >= 40) {
       emoji = '👍';
-      message = 'Good Try!';
+      message = provider.tr('goodTry');
     } else {
       emoji = '💪';
-      message = 'Keep Practicing!';
+      message = provider.tr('keepPracticing');
     }
 
     return Scaffold(
@@ -103,7 +103,7 @@ class _ResultScreenState extends State<ResultScreen>
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  provider.selectedCategory?.category ?? '',
+                  provider.selectedCategory?.categoryForLang(provider.language) ?? '',
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color: Colors.white54,
                       ),
@@ -129,7 +129,7 @@ class _ResultScreenState extends State<ResultScreen>
                         Padding(
                           padding: const EdgeInsets.all(16),
                           child: Text(
-                            'Word Results',
+                            provider.tr('wordResults'),
                             style: Theme.of(context)
                                 .textTheme
                                 .titleMedium
@@ -144,7 +144,7 @@ class _ResultScreenState extends State<ResultScreen>
                               final result = results[index];
                               final isCorrect = result['correct'] as bool;
                               return _buildResultTile(
-                                  result['word'] as String, isCorrect, index);
+                                  result['word'] as String, isCorrect, index, provider);
                             },
                           ),
                         ),
@@ -160,7 +160,7 @@ class _ResultScreenState extends State<ResultScreen>
                     children: [
                       Expanded(
                         child: _buildActionButton(
-                          'Play Again',
+                          provider.tr('playAgain'),
                           Icons.replay,
                           ethiopianGreen,
                           () {
@@ -178,7 +178,7 @@ class _ResultScreenState extends State<ResultScreen>
                       const SizedBox(width: 12),
                       Expanded(
                         child: _buildActionButton(
-                          'Home',
+                          provider.tr('home'),
                           Icons.home,
                           ethiopianYellow,
                           () {
@@ -212,17 +212,17 @@ class _ResultScreenState extends State<ResultScreen>
         children: [
           _buildScoreCircle(
             '${provider.correctCount}',
-            'Correct',
+            provider.tr('correct'),
             correctColor,
           ),
           _buildScoreCircle(
             '${percentage.round()}%',
-            'Accuracy',
+            provider.tr('accuracy'),
             ethiopianYellow,
           ),
           _buildScoreCircle(
             '${provider.skipCount}',
-            'Skipped',
+            provider.tr('skipped'),
             skipColor,
           ),
         ],
@@ -272,7 +272,7 @@ class _ResultScreenState extends State<ResultScreen>
     );
   }
 
-  Widget _buildResultTile(String word, bool isCorrect, int index) {
+  Widget _buildResultTile(String word, bool isCorrect, int index, GameProvider provider) {
     return Container(
       margin: const EdgeInsets.only(bottom: 6),
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -316,7 +316,7 @@ class _ResultScreenState extends State<ResultScreen>
             ),
           ),
           Text(
-            isCorrect ? 'Correct' : 'Skipped',
+            isCorrect ? provider.tr('correct') : provider.tr('skipped'),
             style: TextStyle(
               color: isCorrect ? correctColor : skipColor,
               fontSize: 12,

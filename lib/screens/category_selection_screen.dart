@@ -66,7 +66,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen>
                     ),
                     Expanded(
                       child: Text(
-                        'Choose Category',
+                        provider.tr('chooseCategory'),
                         textAlign: TextAlign.center,
                         style: Theme.of(context)
                             .textTheme
@@ -85,7 +85,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen>
                 child: Column(
                   children: [
                     Text(
-                      'Round Duration',
+                      provider.tr('roundDuration'),
                       style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                             color: Colors.white54,
                           ),
@@ -158,7 +158,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen>
                         const Icon(Icons.sensors, color: Colors.white38, size: 16),
                         const SizedBox(width: 6),
                         Text(
-                          'Tilt Sensitivity',
+                          provider.tr('tiltSensitivity'),
                           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                                 color: Colors.white54,
                               ),
@@ -169,10 +169,10 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        {'label': 'Low', 'index': 0},
-                        {'label': 'Medium', 'index': 1},
-                        {'label': 'High', 'index': 2},
-                        {'label': 'Very High', 'index': 3},
+                        {'label': provider.tr('low'), 'index': 0},
+                        {'label': provider.tr('medium'), 'index': 1},
+                        {'label': provider.tr('high'), 'index': 2},
+                        {'label': provider.tr('veryHigh'), 'index': 3},
                       ].map((item) {
                         final idx = item['index'] as int;
                         final label = item['label'] as String;
@@ -361,7 +361,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen>
                     ),
                     const Spacer(),
                     Text(
-                      category.category,
+                      category.categoryForLang(provider.language),
                       style: const TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.w700,
@@ -372,7 +372,7 @@ class _CategorySelectionScreenState extends State<CategorySelectionScreen>
                     ),
                     const SizedBox(height: 4),
                     Text(
-                      '${category.words.length} words',
+                      '${category.wordsForLang(provider.language).length} ${provider.tr('words')}',
                       style: TextStyle(
                         color: Colors.white.withAlpha(180),
                         fontSize: 12,
